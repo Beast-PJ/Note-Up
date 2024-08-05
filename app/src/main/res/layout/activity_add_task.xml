@@ -11,12 +11,50 @@
         android:padding="12dp"
         android:background="@drawable/edittext_background"/>
 
+    <EditText
+        android:id="@+id/etDetails"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter task details"
+        android:padding="12dp"
+        android:background="@drawable/edittext_background"
+        android:layout_below="@id/etTask"
+        android:layout_marginTop="8dp"/>
+
+    <Spinner
+        android:id="@+id/spDifficulty"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/etDetails"
+        android:layout_marginTop="8dp"/>
+
+    <EditText
+        android:id="@+id/etXP"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter XP"
+        android:inputType="number"
+        android:padding="12dp"
+        android:background="@drawable/edittext_background"
+        android:layout_below="@id/spDifficulty"
+        android:layout_marginTop="8dp"/>
+
+    <EditText
+        android:id="@+id/etReward"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter reward"
+        android:padding="12dp"
+        android:background="@drawable/edittext_background"
+        android:layout_below="@id/etXP"
+        android:layout_marginTop="8dp"/>
+
     <Button
         android:id="@+id/btnAdd"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Add"
-        android:layout_below="@id/etTask"
+        android:layout_below="@id/etReward"
         android:layout_marginTop="16dp"
         android:layout_centerHorizontal="true"/>
 </RelativeLayout>

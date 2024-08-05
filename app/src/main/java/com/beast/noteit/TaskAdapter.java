@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -37,6 +38,7 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.ViewHolder> {
     public void onBindViewHolder(ViewHolder holder, int position) {
         Task task = tasks.get(position);
         holder.tvTask.setText(task.getTask());
+        holder.tvTaskDetails.setText("Difficulty: " + task.getDifficulty() + " | XP: " + task.getXp() + " | Reward: " + task.getReward());
         holder.itemView.setBackgroundColor(task.isCompleted() ? Color.GREEN : Color.WHITE);
     }
 
@@ -47,11 +49,15 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.ViewHolder> {
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public TextView tvTask;
+        public TextView tvTaskDetails;
+        public ImageView ivComplete;
         OnTaskClickListener onTaskClickListener;
 
         public ViewHolder(View itemView, OnTaskClickListener onTaskClickListener) {
             super(itemView);
             tvTask = itemView.findViewById(R.id.tvTask);
+            tvTaskDetails = itemView.findViewById(R.id.tvTaskDetails);
+            ivComplete = itemView.findViewById(R.id.ivComplete);
             this.onTaskClickListener = onTaskClickListener;
             itemView.setOnClickListener(this);
         }
