@@ -13,51 +13,52 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
-
-// TaskListAdapter.java
-
 public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.ViewHolder> {
-    private List<Task> taskItems;
-    private Context context;
 
-    public TaskAdapter(List<Task> taskItems, Context context) {
-        this.taskItems = taskItems;
-        this.context = context;
+    private List<Task> tasks;
+    private OnTaskClickListener onTaskClickListener;
+
+    public interface OnTaskClickListener {
+        void onTaskClick(int position);
     }
 
-    @NonNull
-    @Override
-    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.task_item, parent, false);
-        return new ViewHolder(view);
+    public TaskAdapter(List<Task> tasks, OnTaskClickListener onTaskClickListener) {
+        this.tasks = tasks;
+        this.onTaskClickListener = onTaskClickListener;
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        Task taskItem = taskItems.get(position);
-        holder.titleTextView.setText(taskItem.getTitle());
-        holder.descriptionTextView.setText(taskItem.getDescription());
-        holder.levelTextView.setText(taskItem.getLevel().toString());
-        holder.completedCheckBox.setChecked(taskItem.isCompleted());
+    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_task, parent, false);
+        return new ViewHolder(view, onTaskClickListener);
+    }
+
+    @Override
+    public void onBindViewHolder(ViewHolder holder, int position) {
+        Task task = tasks.get(position);
+        holder.tvTask.setText(task.getTask());
+        holder.itemView.setBackgroundColor(task.isCompleted() ? Color.GREEN : Color.WHITE);
     }
 
     @Override
     public int getItemCount() {
-        return taskItems.size();
+        return tasks.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
-        public TextView titleTextView;
-        public TextView descriptionTextView;
-        public TextView levelTextView;
-        public CheckBox completedCheckBox;
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+        public TextView tvTask;
+        OnTaskClickListener onTaskClickListener;
 
-        public ViewHolder(View itemView) {
+        public ViewHolder(View itemView, OnTaskClickListener onTaskClickListener) {
             super(itemView);
-            titleTextView = itemView.findViewById(R.id.title_text_view);
-            descriptionTextView = itemView.findViewById(R.id.description_text_view);
-            levelTextView = itemView.findViewById(R.id.level_text_view);
-            completedCheckBox = itemView.findViewById(R.id.completed_check_box);
+            tvTask = itemView.findViewById(R.id.tvTask);
+            this.onTaskClickListener = onTaskClickListener;
+            itemView.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View view) {
+            onTaskClickListener.onTaskClick(getAdapterPosition());
         }
     }
 }

@@ -1,51 +1,28 @@
 package com.beast.noteit;
 
-public class Task{
-    private String title;
-    private String description;
-    private Level level;
-    private boolean completed;
+public class Task {
+    private String task;
+    private boolean isCompleted;
 
-    public Task(String title, String description, Level level) {
-        this.title = title;
-        this.description = description;
-        this.level = level;
-        this.completed = false;
+    public Task(String task) {
+        this.task = task;
+        this.isCompleted = false;
     }
 
-    public String getTitle() {
-        return title;
+    public String getTask() {
+        return task;
     }
 
-    public String getDescription() {
-        return description;
-    }
-
-    public Level getLevel() {
-        return level;
+    public void setTask(String task) {
+        this.task = task;
     }
 
     public boolean isCompleted() {
-        return completed;
+        return isCompleted;
     }
 
     public void setCompleted(boolean completed) {
-        this.completed = completed;
+        isCompleted = completed;
     }
 }
 
-public enum Level {
-    EASY(10),
-    MEDIUM(20),
-    HARD(30);
-
-    private int xp;
-
-    Level(int xp) {
-        this.xp = xp;
-    }
-
-    public int getXp() {
-        return xp;
-    }
-}

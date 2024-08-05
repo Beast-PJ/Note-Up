@@ -6,6 +6,17 @@
     tools:context=".MainActivity"
     android:background="@color/background">
 
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/topAppBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/colorPrimary"
+        android:elevation="4dp"
+        android:title="Task List"
+        android:titleTextColor="@android:color/white"
+        app:titleCentered="true"
+        app:layout_scrollFlags="scroll|enterAlways"
+        app:navigationIcon="@drawable/ic_menu" />
 
     <TextView
         android:id="@+id/tvLevel"
@@ -14,17 +25,29 @@
         android:text="Level: 1"
         android:textSize="18sp"
         android:textColor="@color/primaryText"
+        android:layout_below="@id/topAppBar"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="16dp"/>
+
+    <TextView
+        android:id="@+id/tvXP"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="XP: 0/100"
+        android:textSize="16sp"
+        android:textColor="@color/secondaryText"
+        android:layout_below="@id/tvLevel"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="8dp"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvTasks"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@id/tvLevel"
+        android:layout_height="0dp"
+        android:layout_below="@id/tvXP"
+        android:layout_above="@id/btnAddTask"
         android:padding="16dp"
-        android:clipToPadding="false"
-        android:layout_marginBottom="72dp"/>
+        android:clipToPadding="false"/>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/btnAddTask"
@@ -35,5 +58,7 @@
         android:layout_marginBottom="16dp"
         android:layout_marginEnd="16dp"
         android:contentDescription="Add Task"
-        android:src="@drawable/ic_add"/>
+        android:src="@drawable/ic_add"
+        app:backgroundTint="@color/colorAccent"
+        app:tint="@android:color/white"/>
 </RelativeLayout>
