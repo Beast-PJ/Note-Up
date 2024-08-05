@@ -1,12 +1,8 @@
 package com.beast.noteit;
 
-import android.content.Context;
-import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CheckBox;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -14,57 +10,54 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
-public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.ViewHolder> {
+public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder> {
 
-    private List<Task> tasks;
-    private OnTaskClickListener onTaskClickListener;
+    private List<Task> taskList;
+    private TaskCompleteListener taskCompleteListener;
 
-    public interface OnTaskClickListener {
-        void onTaskClick(int position);
+    public TaskAdapter(List<Task> taskList, TaskCompleteListener taskCompleteListener) {
+        this.taskList = taskList;
+        this.taskCompleteListener = taskCompleteListener;
     }
 
-    public TaskAdapter(List<Task> tasks, OnTaskClickListener onTaskClickListener) {
-        this.tasks = tasks;
-        this.onTaskClickListener = onTaskClickListener;
-    }
-
+    @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public TaskViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_task, parent, false);
-        return new ViewHolder(view, onTaskClickListener);
+        return new TaskViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
-        Task task = tasks.get(position);
-        holder.tvTask.setText(task.getTask());
-        holder.tvTaskDetails.setText("Difficulty: " + task.getDifficulty() + " | XP: " + task.getXp() + " | Reward: " + task.getReward());
-        holder.itemView.setBackgroundColor(task.isCompleted() ? Color.GREEN : Color.WHITE);
+    public void onBindViewHolder(@NonNull TaskViewHolder holder, int position) {
+        Task task = taskList.get(position);
+        holder.tvTaskName.setText(task.getTask());
+        holder.tvTaskDetails.setText(task.getDetails());
+        holder.tvTaskXP.setText(String.format("XP: %d", task.getXp()));
+        holder.tvTaskDifficulty.setText(String.format("Difficulty: %d", task.getDifficulty()));
+        holder.tvTaskReward.setText(String.format("Reward: %s", task.getReward()));
+
+        holder.itemView.setOnClickListener(v -> taskCompleteListener.onTaskComplete(position));
     }
 
     @Override
     public int getItemCount() {
-        return tasks.size();
+        return taskList.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        public TextView tvTask;
-        public TextView tvTaskDetails;
-        public ImageView ivComplete;
-        OnTaskClickListener onTaskClickListener;
+    static class TaskViewHolder extends RecyclerView.ViewHolder {
+        TextView tvTaskName, tvTaskDetails, tvTaskXP, tvTaskDifficulty, tvTaskReward;
 
-        public ViewHolder(View itemView, OnTaskClickListener onTaskClickListener) {
+        TaskViewHolder(@NonNull View itemView) {
             super(itemView);
-            tvTask = itemView.findViewById(R.id.tvTask);
+            tvTaskName = itemView.findViewById(R.id.tvTaskName);
             tvTaskDetails = itemView.findViewById(R.id.tvTaskDetails);
-            ivComplete = itemView.findViewById(R.id.ivComplete);
-            this.onTaskClickListener = onTaskClickListener;
-            itemView.setOnClickListener(this);
+            tvTaskXP = itemView.findViewById(R.id.tvTaskXP);
+            tvTaskDifficulty = itemView.findViewById(R.id.tvTaskDifficulty);
+            tvTaskReward = itemView.findViewById(R.id.tvTaskReward);
         }
+    }
 
-        @Override
-        public void onClick(View view) {
-            onTaskClickListener.onTaskClick(getAdapterPosition());
-        }
+    public interface TaskCompleteListener {
+        void onTaskComplete(int position);
     }
 }

@@ -8,10 +8,17 @@
             android:icon="@drawable/ic_tasks" />
 
         <item
+            android:id="@+id/nav_player_progress"
+            android:title="Player Progress"
+            android:icon="@drawable/ic_player_progress"
+            app:showAsAction="ifRoom"/>
+
+        <item
             android:id="@+id/nav_night_mode"
             android:title="Night Mode"
             android:icon="@drawable/ic_night_mode"
             app:showAsAction="ifRoom"/>
+
         <item
             android:id="@+id/nav_settings"
             android:title="Settings"
