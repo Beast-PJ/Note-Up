@@ -1,14 +1,19 @@
 package com.beast.noteit;
 
 import android.annotation.SuppressLint;
+import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.view.GravityCompat;
@@ -23,19 +28,12 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
-    private static final int ADD_TASK_REQUEST = 123;
     private DrawerLayout drawerLayout;
-    private NavigationView navigationView;
-    private TextView tvLevel, tvXP;
-    private ProgressBar progressBarXP;
-    private RecyclerView rvTasks;
-    private FloatingActionButton btnAddTask;
-    private TaskAdapter taskAdapter;
     private List<Task> taskList;
-
-    private int level = 1;
-    private int currentXP = 0;
-    private int xpForNextLevel = 100;
+    private TaskAdapter taskAdapter;
+    private int playerLevel = 1;
+    private int playerXP = 0;
+    private int xpToNextLevel = 100;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,81 +41,57 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         setContentView(R.layout.activity_main);
 
         drawerLayout = findViewById(R.id.drawer_layout);
-        navigationView = findViewById(R.id.navigation_view);
+        NavigationView navigationView = findViewById(R.id.navigation_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        tvLevel = findViewById(R.id.tvLevel);
-        tvXP = findViewById(R.id.tvXP);
-        progressBarXP = findViewById(R.id.progressBarXP);
-        rvTasks = findViewById(R.id.rvTasks);
-        btnAddTask = findViewById(R.id.btnAddTask);
-
         taskList = new ArrayList<>();
-        taskAdapter = new TaskAdapter(taskList, this::completeTask);
-
-        rvTasks.setLayoutManager(new LinearLayoutManager(this));
-        rvTasks.setAdapter(taskAdapter);
-
-        btnAddTask.setOnClickListener(view -> {
-            Intent intent = new Intent(MainActivity.this, AddTaskActivity.class);
-            startActivityForResult(intent, ADD_TASK_REQUEST);
+        taskAdapter = new TaskAdapter(taskList, position -> {
+            Task completedTask = taskList.get(position);
+            playerXP += completedTask.getXp();
+            checkForLevelUp();
+            taskList.remove(position);
+            taskAdapter.notifyItemRemoved(position);
         });
 
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, findViewById(R.id.topAppBar), R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawerLayout.addDrawerListener(toggle);
-        toggle.syncState();
+        RecyclerView recyclerView = findViewById(R.id.rvTasks);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setAdapter(taskAdapter);
+
+        FloatingActionButton fab = findViewById(R.id.btnAddTask);
+        fab.setOnClickListener(v -> addNewTask());
 
         updateUI();
     }
 
-    private void completeTask(int position) {
-        Task task = taskList.get(position);
-        if (!task.isCompleted()) {
-            task.setCompleted(true);
-            currentXP += task.getXp();
-            checkLevelUp();
-            taskAdapter.notifyItemChanged(position);
+    private void updateUI() {
+        TextView tvLevel = findViewById(R.id.tvLevel);
+        TextView tvXP = findViewById(R.id.tvXP);
+        ProgressBar progressBarXP = findViewById(R.id.progressBarXP);
+
+        tvLevel.setText(String.format("Level: %d", playerLevel));
+        tvXP.setText(String.format("XP: %d/%d", playerXP, xpToNextLevel));
+        progressBarXP.setMax(xpToNextLevel);
+        progressBarXP.setProgress(playerXP);
+    }
+
+    private void checkForLevelUp() {
+        if (playerXP >= xpToNextLevel) {
+            playerLevel++;
+            playerXP = playerXP - xpToNextLevel;
+            xpToNextLevel *= 1.5; // Increase the XP requirement for next level
+            showLevelUpDialog();
             updateUI();
         }
     }
 
-    private void checkLevelUp() {
-        if (currentXP >= xpForNextLevel) {
-            level++;
-            currentXP -= xpForNextLevel;
-            xpForNextLevel += 50; // Increase the XP needed for next levels progressively
-        }
+    private void showLevelUpDialog() {
+        LevelUpDialog dialog = new LevelUpDialog(this, playerLevel);
+        dialog.show();
     }
 
-    private void updateUI() {
-        tvLevel.setText("Level: " + level);
-        tvXP.setText("XP: " + currentXP + "/" + xpForNextLevel);
-        progressBarXP.setMax(xpForNextLevel);
-        progressBarXP.setProgress(currentXP);
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == ADD_TASK_REQUEST && resultCode == RESULT_OK && data != null) {
-            String task = data.getStringExtra("task");
-            String details = data.getStringExtra("details");
-            int difficulty = data.getIntExtra("difficulty", 1);
-            int xp = data.getIntExtra("xp", 10);
-            String reward = data.getStringExtra("reward");
-
-            taskList.add(new Task(task, details, difficulty, xp, reward));
-            taskAdapter.notifyItemInserted(taskList.size() - 1);
-        }
-    }
-
-    @Override
-    public void onBackPressed() {
-        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
-            drawerLayout.closeDrawer(GravityCompat.START);
-        } else {
-            super.onBackPressed();
-        }
+    private void addNewTask() {
+        Intent intent = new Intent(MainActivity.this,AddTaskActivity.class);
+        startActivity(intent);
     }
 
     @SuppressLint("NonConstantResourceId")
@@ -139,6 +113,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return false;
     }
 
+
     private void toggleNightMode() {
         int nightMode = AppCompatDelegate.getDefaultNightMode();
         if (nightMode == AppCompatDelegate.MODE_NIGHT_YES) {
@@ -147,5 +122,27 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
         }
         recreate();
+    }
+
+    public static class LevelUpDialog extends Dialog {
+
+        private int newLevel;
+
+        public LevelUpDialog(@NonNull Context context, int newLevel) {
+            super(context);
+            this.newLevel = newLevel;
+        }
+
+        @Override
+        protected void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            setContentView(R.layout.dialog_level_up);
+
+            TextView tvNewLevel = findViewById(R.id.tvNewLevel);
+            tvNewLevel.setText(String.format("You have reached Level %d", newLevel));
+
+            Button btnClose = findViewById(R.id.btnClose);
+            btnClose.setOnClickListener(v -> dismiss());
+        }
     }
 }
