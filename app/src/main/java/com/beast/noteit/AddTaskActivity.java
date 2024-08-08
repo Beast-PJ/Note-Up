@@ -44,8 +44,6 @@ public class AddTaskActivity extends AppCompatActivity {
             String details = etDetails.getText().toString();
             int difficulty = spDifficulty.getSelectedItemPosition() + 1;
 
-
-
             if (validate_data(task,reward,details, String.valueOf(xp))) {
                 Intent resultIntent = new Intent();
                 resultIntent.putExtra("task", task);

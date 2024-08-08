@@ -12,12 +12,12 @@ import java.util.List;
 
 public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder> {
 
-    private List<Task> taskList;
-    private TaskCompleteListener taskCompleteListener;
+    private final List<Task> taskList;
+    private final OnTaskCompleteListener listener;
 
-    public TaskAdapter(List<Task> taskList, TaskCompleteListener taskCompleteListener) {
+    public TaskAdapter(List<Task> taskList, OnTaskCompleteListener listener) {
         this.taskList = taskList;
-        this.taskCompleteListener = taskCompleteListener;
+        this.listener = listener;
     }
 
     @NonNull
@@ -30,13 +30,7 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
     @Override
     public void onBindViewHolder(@NonNull TaskViewHolder holder, int position) {
         Task task = taskList.get(position);
-        holder.tvTaskName.setText(task.getTask());
-        holder.tvTaskDetails.setText(task.getDetails());
-        holder.tvTaskXP.setText(String.format("XP: %d", task.getXp()));
-        holder.tvTaskDifficulty.setText(String.format("Difficulty: %d", task.getDifficulty()));
-        holder.tvTaskReward.setText(String.format("Reward: %s", task.getReward()));
-
-        holder.itemView.setOnClickListener(v -> taskCompleteListener.onTaskComplete(position));
+        holder.bind(task, listener);
     }
 
     @Override
@@ -44,20 +38,29 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
         return taskList.size();
     }
 
-    static class TaskViewHolder extends RecyclerView.ViewHolder {
-        TextView tvTaskName, tvTaskDetails, tvTaskXP, tvTaskDifficulty, tvTaskReward;
+    public static class TaskViewHolder extends RecyclerView.ViewHolder {
 
-        TaskViewHolder(@NonNull View itemView) {
+        private final TextView tvTaskName, tvTaskXP, tvTaskDifficulty, tvTaskReward;
+
+        public TaskViewHolder(@NonNull View itemView) {
             super(itemView);
             tvTaskName = itemView.findViewById(R.id.tvTaskName);
-            tvTaskDetails = itemView.findViewById(R.id.tvTaskDetails);
             tvTaskXP = itemView.findViewById(R.id.tvTaskXP);
             tvTaskDifficulty = itemView.findViewById(R.id.tvTaskDifficulty);
             tvTaskReward = itemView.findViewById(R.id.tvTaskReward);
         }
+
+        public void bind(Task task, OnTaskCompleteListener listener) {
+            tvTaskName.setText(task.getTask());
+            tvTaskXP.setText(String.format("XP: %d", task.getXp()));
+            tvTaskDifficulty.setText(String.format("Difficulty: %d", task.getDifficulty()));
+            tvTaskReward.setText(task.getReward());
+
+            itemView.setOnClickListener(v -> listener.onTaskCompleted(getAdapterPosition()));
+        }
     }
 
-    public interface TaskCompleteListener {
-        void onTaskComplete(int position);
+    public interface OnTaskCompleteListener {
+        void onTaskCompleted(int position);
     }
 }

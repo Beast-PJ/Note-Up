@@ -63,6 +63,28 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         updateUI();
     }
 
+    private void addNewTask() {
+        Intent intent = new Intent(MainActivity.this, AddTaskActivity.class);
+        startActivityForResult(intent, 1); // Request code 1 for adding task
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 1 && resultCode == RESULT_OK) {
+            String taskName = data.getStringExtra("task");
+            String details = data.getStringExtra("details");
+            int difficulty = data.getIntExtra("difficulty", 1);
+            int xp = data.getIntExtra("xp", 0);
+            String reward = data.getStringExtra("reward");
+
+            Task newTask = new Task(taskName, details, difficulty, xp, reward);
+            taskList.add(newTask);
+            taskAdapter.notifyItemInserted(taskList.size() - 1);
+            updateUI();
+        }
+    }
+
     private void updateUI() {
         TextView tvLevel = findViewById(R.id.tvLevel);
         TextView tvXP = findViewById(R.id.tvXP);
@@ -89,60 +111,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         dialog.show();
     }
 
-    private void addNewTask() {
-        Intent intent = new Intent(MainActivity.this,AddTaskActivity.class);
-        startActivity(intent);
-    }
-
-    @SuppressLint("NonConstantResourceId")
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        CharSequence title = item.getTitle();
-        if (title.equals("Tasks")) {
-            drawerLayout.closeDrawer(GravityCompat.START);
-            return true;
-        } else if (title == "Night Mode") {// Handle settings
-            Toast.makeText(this, "Settings clicked", Toast.LENGTH_SHORT).show();
-            drawerLayout.closeDrawer(GravityCompat.START);
-            return true;
-        } else if (title == "Settings") {
-            toggleNightMode();
-            drawerLayout.closeDrawer(GravityCompat.START);
-            return true;
-        }
         return false;
-    }
-
-
-    private void toggleNightMode() {
-        int nightMode = AppCompatDelegate.getDefaultNightMode();
-        if (nightMode == AppCompatDelegate.MODE_NIGHT_YES) {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-        } else {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-        }
-        recreate();
-    }
-
-    public static class LevelUpDialog extends Dialog {
-
-        private int newLevel;
-
-        public LevelUpDialog(@NonNull Context context, int newLevel) {
-            super(context);
-            this.newLevel = newLevel;
-        }
-
-        @Override
-        protected void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-            setContentView(R.layout.dialog_level_up);
-
-            TextView tvNewLevel = findViewById(R.id.tvNewLevel);
-            tvNewLevel.setText(String.format("You have reached Level %d", newLevel));
-
-            Button btnClose = findViewById(R.id.btnClose);
-            btnClose.setOnClickListener(v -> dismiss());
-        }
     }
 }
