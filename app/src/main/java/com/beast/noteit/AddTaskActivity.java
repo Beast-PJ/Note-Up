@@ -1,16 +1,14 @@
 package com.beast.noteit;
 
-import androidx.appcompat.app.AppCompatActivity;
-
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Patterns;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 public class AddTaskActivity extends AppCompatActivity {
 
@@ -36,15 +34,13 @@ public class AddTaskActivity extends AppCompatActivity {
         spDifficulty.setAdapter(adapter);
 
         btnAdd.setOnClickListener(view -> {
-            String task,reward;
-            int xp;
-            task = etTask.getText().toString();
-            reward = etReward.getText().toString();
-            xp = Integer.parseInt(etXP.getText().toString());
+            String task = etTask.getText().toString();
+            String reward = etReward.getText().toString();
+            int xp = Integer.parseInt(etXP.getText().toString());
             String details = etDetails.getText().toString();
             int difficulty = spDifficulty.getSelectedItemPosition() + 1;
 
-            if (validate_data(task,reward,details, String.valueOf(xp))) {
+            if (validateData(task, reward, details, String.valueOf(xp))) {
                 Intent resultIntent = new Intent();
                 resultIntent.putExtra("task", task);
                 resultIntent.putExtra("details", details);
@@ -57,23 +53,23 @@ public class AddTaskActivity extends AppCompatActivity {
                 Toast.makeText(AddTaskActivity.this, "Please fill in all fields", Toast.LENGTH_SHORT).show();
             }
         });
-
     }
-    boolean validate_data(String task, String reward, String details, String xp){
-        if (task.isEmpty()){
-            etTask.setError("Invalid Email");
+
+    private boolean validateData(String task, String reward, String details, String xp) {
+        if (task.isEmpty()) {
+            etTask.setError("Invalid Task");
             return false;
         }
-        if (reward.isEmpty()){
-            etReward.setError("Password lenght is Invalid");
+        if (reward.isEmpty()) {
+            etReward.setError("Invalid Reward");
             return false;
         }
-        if(xp.isEmpty()) {
-            etXP.setError("Invalid Confirm Password");
+        if (xp.isEmpty()) {
+            etXP.setError("Invalid XP");
             return false;
         }
-        if(details.isEmpty()) {
-            etDetails.setError("Invalid Confirm Password");
+        if (details.isEmpty()) {
+            etDetails.setError("Invalid Details");
             return false;
         }
         return true;

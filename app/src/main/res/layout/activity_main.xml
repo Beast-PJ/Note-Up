@@ -58,15 +58,19 @@
             android:max="100"
             android:progressDrawable="@drawable/progress_bar" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rvTasks"
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/tabLayout"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_alignParentBottom="true"
-            android:layout_below="@id/progressBarXP"
-            android:clipToPadding="false"
-            android:padding="16dp"
-            tools:listitem="@layout/item_task" />
+            android:layout_height="wrap_content"
+                android:background="@color/colorPrimary"
+            android:layout_below="@id/progressBarXP"/>
+
+        <androidx.viewpager2.widget.ViewPager2
+            android:id="@+id/viewPager"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/tabLayout"
+            android:padding="16dp"/>
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/btnAddTask"
@@ -90,4 +94,6 @@
         android:fitsSystemWindows="true"
         app:menu="@menu/drawer_menu"
         app:headerLayout="@layout/nav_header" />
+
+
 </androidx.drawerlayout.widget.DrawerLayout>

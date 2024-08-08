@@ -20,20 +20,12 @@ public class LevelUpDialog extends Dialog {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.dialog_level_up);  // This refers to the XML layout
+        setContentView(R.layout.dialog_level_up);
 
-        // Finding views by their IDs
-        TextView tvCongrats = findViewById(R.id.tvCongrats);
-        TextView tvLevelUp = findViewById(R.id.tvLevelUp);
         TextView tvNewLevel = findViewById(R.id.tvNewLevel);
+        tvNewLevel.setText(String.format("You have reached Level %d", newLevel));
+
         Button btnClose = findViewById(R.id.btnClose);
-
-        // Setting the text for each TextView
-        tvCongrats.setText("CONGRATULATIONS!");
-        tvLevelUp.setText("You've leveled up!");
-        tvNewLevel.setText(String.format("New Level: %d", newLevel));
-
-        // Setting click listener for the button to dismiss the dialog
         btnClose.setOnClickListener(v -> dismiss());
     }
 }

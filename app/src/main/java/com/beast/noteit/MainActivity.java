@@ -20,9 +20,13 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
+import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.tabs.TabLayoutMediator;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,6 +38,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private int playerLevel = 1;
     private int playerXP = 0;
     private int xpToNextLevel = 100;
+    private DrawerLayout drawerLayout;
+    private ViewPager2 viewPager;
+    private TabLayout tabLayout;
+    private ViewPagerAdapter viewPagerAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,11 +61,27 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             taskAdapter.notifyItemRemoved(position);
         });
 
-        RecyclerView recyclerView = findViewById(R.id.rvTasks);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.setAdapter(taskAdapter);
+        drawerLayout = findViewById(R.id.drawer_layout);
+        viewPager = findViewById(R.id.viewPager);
+        tabLayout = findViewById(R.id.tabLayout);
 
-        FloatingActionButton fab = findViewById(R.id.btnAddTask);
+        setupViewPager(viewPager);
+        new TabLayoutMediator(tabLayout, viewPager,
+                (tab, position) -> tab.setText(viewPagerAdapter.getPageTitle(position))).attach();
+    }
+
+    private void setupViewPager(ViewPager2 viewPager) {
+        viewPagerAdapter = new ViewPagerAdapter(this);
+        viewPagerAdapter.addFragment(new AllTasksFragment(), "All");
+        viewPagerAdapter.addFragment(new PersonalTasksFragment(), "Personal");
+        viewPagerAdapter.addFragment(new WorkTasksFragment(), "Work");
+        viewPagerAdapter.addFragment(new WishlistFragment(), "Wishlist");
+        // Add more fragments as needed
+        viewPager.setAdapter(viewPagerAdapter);
+    }
+
+
+    FloatingActionButton fab = findViewById(R.id.btnAddTask);
         fab.setOnClickListener(v -> addNewTask());
 
         updateUI();
