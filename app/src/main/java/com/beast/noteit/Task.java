@@ -1,22 +1,26 @@
 package com.beast.noteit;
-
 public class Task {
     private String task;
     private String details;
-    private int difficulty; // 1: Easy, 2: Medium, 3: Hard
     private int xp;
     private String reward;
-    private boolean isCompleted;
+    private String category; // Add this line
 
-    public Task(String task, String details, int difficulty, int xp, String reward) {
+    public Task(String task, String details, int xp, String reward, String category) {
         this.task = task;
         this.details = details;
-        this.difficulty = difficulty;
         this.xp = xp;
         this.reward = reward;
-        this.isCompleted = false;
+        this.category = category; // Add this line
     }
 
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
     public String getTask() {
         return task;
     }
