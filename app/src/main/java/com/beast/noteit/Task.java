@@ -1,18 +1,24 @@
 package com.beast.noteit;
 public class Task {
+
     private String task;
     private String details;
+    private int difficulty;
     private int xp;
     private String reward;
-    private String category; // Add this line
+    private String category;
 
-    public Task(String task, String details, int xp, String reward, String category) {
+    public Task(String task, String details, int difficulty, int xp, String reward) {
         this.task = task;
         this.details = details;
+        this.difficulty = difficulty;
         this.xp = xp;
         this.reward = reward;
-        this.category = category; // Add this line
+        this.category = category;
     }
+
+
+
 
     public String getCategory() {
         return category;
@@ -59,13 +65,5 @@ public class Task {
 
     public void setReward(String reward) {
         this.reward = reward;
-    }
-
-    public boolean isCompleted() {
-        return isCompleted;
-    }
-
-    public void setCompleted(boolean completed) {
-        isCompleted = completed;
     }
 }

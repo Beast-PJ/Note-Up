@@ -1,5 +1,6 @@
 package com.beast.noteit;
 
+import android.annotation.SuppressLint;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,7 +24,7 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
     @NonNull
     @Override
     public TaskViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_task, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_task2, parent, false);
         return new TaskViewHolder(view);
     }
 
@@ -50,6 +51,7 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
             tvTaskReward = itemView.findViewById(R.id.tvTaskReward);
         }
 
+        @SuppressLint("DefaultLocale")
         public void bind(Task task, OnTaskCompleteListener listener) {
             tvTaskName.setText(task.getTask());
             tvTaskXP.setText(String.format("XP: %d", task.getXp()));

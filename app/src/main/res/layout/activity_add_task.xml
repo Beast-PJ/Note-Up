@@ -2,7 +2,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="16dp"
-    android:background="@color/background">
+    android:background="@drawable/gradient1">
 
     <EditText
         android:id="@+id/etTask"
@@ -99,4 +99,6 @@
         android:gravity="center"
         android:background="@drawable/edittext_background"        android:layout_below="@id/etReward"
         android:layout_centerHorizontal="true"/>
+
+
 </RelativeLayout>

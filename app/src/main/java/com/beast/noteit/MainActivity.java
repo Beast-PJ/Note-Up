@@ -1,57 +1,52 @@
 package com.beast.noteit;
 
 import android.annotation.SuppressLint;
-import android.app.Dialog;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.app.AppCompatDelegate;
-import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
-import com.google.android.material.tabs.TabLayout;
-import com.google.android.material.tabs.TabLayoutMediator;
+import com.karumi.dexter.Dexter;
+import com.karumi.dexter.MultiplePermissionsReport;
+import com.karumi.dexter.PermissionToken;
+import com.karumi.dexter.listener.PermissionRequest;
+import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
-    private DrawerLayout drawerLayout;
     private List<Task> taskList;
     private TaskAdapter taskAdapter;
     private int playerLevel = 1;
     private int playerXP = 0;
     private int xpToNextLevel = 100;
-    private DrawerLayout drawerLayout;
-    private ViewPager2 viewPager;
-    private TabLayout tabLayout;
-    private ViewPagerAdapter viewPagerAdapter;
+    private FloatingActionButton fab;
+    private RecyclerView recyclerView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        drawerLayout = findViewById(R.id.drawer_layout);
+        // Initialize UI elements
+        DrawerLayout drawerLayout = findViewById(R.id.drawer_layout);
+        fab = findViewById(R.id.btnAddTask);
         NavigationView navigationView = findViewById(R.id.navigation_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        // Initialize task list and adapter
         taskList = new ArrayList<>();
         taskAdapter = new TaskAdapter(taskList, position -> {
             Task completedTask = taskList.get(position);
@@ -59,37 +54,59 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             checkForLevelUp();
             taskList.remove(position);
             taskAdapter.notifyItemRemoved(position);
+            updateUI();
         });
 
-        drawerLayout = findViewById(R.id.drawer_layout);
-        viewPager = findViewById(R.id.viewPager);
-        tabLayout = findViewById(R.id.tabLayout);
+        // Set up RecyclerView
+        recyclerView = findViewById(R.id.rvTasks);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setAdapter(taskAdapter);
 
-        setupViewPager(viewPager);
-        new TabLayoutMediator(tabLayout, viewPager,
-                (tab, position) -> tab.setText(viewPagerAdapter.getPageTitle(position))).attach();
-    }
-
-    private void setupViewPager(ViewPager2 viewPager) {
-        viewPagerAdapter = new ViewPagerAdapter(this);
-        viewPagerAdapter.addFragment(new AllTasksFragment(), "All");
-        viewPagerAdapter.addFragment(new PersonalTasksFragment(), "Personal");
-        viewPagerAdapter.addFragment(new WorkTasksFragment(), "Work");
-        viewPagerAdapter.addFragment(new WishlistFragment(), "Wishlist");
-        // Add more fragments as needed
-        viewPager.setAdapter(viewPagerAdapter);
-    }
-
-
-    FloatingActionButton fab = findViewById(R.id.btnAddTask);
+        // Set up FloatingActionButton click listener
         fab.setOnClickListener(v -> addNewTask());
 
+        // Request necessary permissions using Dexter
+        requestPermissions();
+
+        // Update UI with current level and XP
         updateUI();
+    }
+
+    private void requestPermissions() {
+        Dexter.withContext(this)
+                .withPermissions(
+                        android.Manifest.permission.CAMERA,
+                        android.Manifest.permission.ACCESS_FINE_LOCATION,
+                        android.Manifest.permission.READ_EXTERNAL_STORAGE,
+                        android.Manifest.permission.WRITE_EXTERNAL_STORAGE
+                ).withListener(new MultiplePermissionsListener() {
+                    @Override
+                    public void onPermissionsChecked(MultiplePermissionsReport report) {
+                        if (!report.areAllPermissionsGranted()) {
+//                            showPermissionExplanationDialog();
+                        }
+                    }
+
+                    @Override
+                    public void onPermissionRationaleShouldBeShown(List<PermissionRequest> permissions, PermissionToken token) {
+                        token.continuePermissionRequest();
+                    }
+                }).check();
+    }
+
+    private void showPermissionExplanationDialog() {
+        new androidx.appcompat.app.AlertDialog.Builder(this)
+                .setTitle("Permissions Required")
+                .setMessage("This app needs camera, location, and storage permissions to function correctly. Please enable them in settings.")
+                .setPositiveButton("OK", (dialog, which) -> requestPermissions())
+                .setNegativeButton("Cancel", (dialog, which) -> Toast.makeText(MainActivity.this, "Permissions denied. Some features may not work.", Toast.LENGTH_SHORT).show())
+                .create()
+                .show();
     }
 
     private void addNewTask() {
         Intent intent = new Intent(MainActivity.this, AddTaskActivity.class);
-        startActivityForResult(intent, 1); // Request code 1 for adding task
+        startActivityForResult(intent, 1);
     }
 
     @Override
@@ -109,6 +126,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
+    @SuppressLint("DefaultLocale")
     private void updateUI() {
         TextView tvLevel = findViewById(R.id.tvLevel);
         TextView tvXP = findViewById(R.id.tvXP);
