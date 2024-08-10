@@ -52,32 +52,56 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/tvXP"
-            android:layout_margin="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="16dp"
             android:max="100"
             android:progressDrawable="@drawable/progress_bar" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rvTasks"
+<!--        <androidx.recyclerview.widget.RecyclerView-->
+<!--            android:id="@+id/rvTasks"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="match_parent"-->
+<!--            android:layout_below="@id/progressBarXP"-->
+<!--            android:padding="16dp"-->
+<!--            android:scrollbars="vertical"-->
+<!--            tools:listitem="@layout/item_task2" />-->
+
+        <FrameLayout
+            android:id="@+id/fragment_container"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_below="@id/progressBarXP"
-            android:layout_marginTop="14dp"
+            android:layout_above="@id/bottom_navigation"
             android:padding="16dp"
             android:scrollbars="vertical"
             tools:listitem="@layout/item_task2" />
+
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/btnAddTask"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
-            android:layout_alignParentBottom="true"
-            android:layout_marginEnd="20dp"
-            android:layout_marginBottom="20dp"
+            android:layout_marginEnd="30dp"
+            android:layout_marginBottom="30dp"
             android:contentDescription="Add Task"
+            android:layout_above="@id/bottom_navigation"
             android:src="@drawable/ic_add"
             app:backgroundTint="@color/prime2"
             app:tint="@android:color/white" />
+
+        <com.google.android.material.bottomnavigation.BottomNavigationView
+            android:id="@+id/bottom_navigation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            app:itemIconTint="@drawable/navbar_state"
+            app:itemTextColor="@drawable/navbar_state"
+            android:background="@color/black"
+            app:menu="@menu/bottom_navigation_menu" />
+
     </RelativeLayout>
 
     <com.google.android.material.navigation.NavigationView
@@ -88,6 +112,5 @@
         android:fitsSystemWindows="true"
         app:menu="@menu/drawer_menu"
         app:headerLayout="@layout/nav_header" />
-
 
 </androidx.drawerlayout.widget.DrawerLayout>

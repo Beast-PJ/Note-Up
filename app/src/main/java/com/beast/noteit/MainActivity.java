@@ -11,9 +11,11 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.karumi.dexter.Dexter;
@@ -32,8 +34,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private int playerLevel = 1;
     private int playerXP = 0;
     private int xpToNextLevel = 100;
-    private FloatingActionButton fab;
     private RecyclerView recyclerView;
+    private final FragmentManager fragmentManager = getSupportFragmentManager();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,9 +45,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         // Initialize UI elements
         DrawerLayout drawerLayout = findViewById(R.id.drawer_layout);
-        fab = findViewById(R.id.btnAddTask);
+        FloatingActionButton fab = findViewById(R.id.btnAddTask);
         NavigationView navigationView = findViewById(R.id.navigation_view);
         navigationView.setNavigationItemSelectedListener(this);
+        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
+        bottomNavigationView.setOnNavigationItemSelectedListener(this::onNavigationItemSelected);
 
         // Initialize task list and adapter
         taskList = new ArrayList<>();
@@ -58,14 +63,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         });
 
         // Set up RecyclerView
-        recyclerView = findViewById(R.id.rvTasks);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.setAdapter(taskAdapter);
+//        recyclerView = findViewById(R.id.rvTasks);
+//        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+//        recyclerView.setAdapter(taskAdapter);
 
-        // Set up FloatingActionButton click listener
         fab.setOnClickListener(v -> addNewTask());
 
-        // Request necessary permissions using Dexter
+
+        // Load default fragment
+        if (savedInstanceState == null) {
+            loadFragment(new TasksFragment());
+        }
+
         requestPermissions();
 
         // Update UI with current level and XP
@@ -155,6 +164,28 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        Fragment fragment = null;
+
+        CharSequence title = item.getTitle();
+        assert title != null;
+        if (title.equals("Tasks")) {
+            fragment = new TasksFragment();
+        } else if (title.equals("Calendar")) {
+            fragment = new CalendarFragment();
+        } else if (title.equals("Profile")) {
+            fragment = new ProfileFragment();
+        }
+
+        return loadFragment(fragment);
+    }
+
+    private boolean loadFragment(Fragment fragment) {
+        if (fragment != null) {
+            fragmentManager.beginTransaction()
+                    .replace(R.id.fragment_container, fragment)
+                    .commit();
+            return true;
+        }
         return false;
     }
 }
